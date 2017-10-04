@@ -40,7 +40,7 @@ DjangoGenerator.prototype.askFor = function askFor() {
     name: 'djangoVersion',
     message: 'Which version of Django would you like to use?',
     type: 'list',
-    choices: ['1.5', '1.6', '1.7'],
+    choices: ['1.9', '1.10', '1.11'],
     default: 2
   }];
 
@@ -49,9 +49,9 @@ DjangoGenerator.prototype.askFor = function askFor() {
     this.author = props.author;
     this.projectRepo = props.projectRepo;
     var versionMap = {
-        '1.5': '>=1.5,<1.6',
-        '1.6': '>=1.6,<1.7',
-        '1.7': '>=1.7,<1.8',
+        '1.9': '>=1.9,<1.10',
+        '1.10': '>=1.10,<1.11',
+        '1.11': '>=1.11,<1.12',
     };
     this.djangoVersion = versionMap[props.djangoVersion];
 
@@ -96,14 +96,6 @@ DjangoGenerator.prototype.git = function git() {
   this.template('_gitignore', '.gitignore');
 };
 
-DjangoGenerator.prototype.bower = function bower() {
-  this.copy('bowerrc', '.bowerrc');
-  this.template('_bower.json', 'bower.json');
-};
-
-DjangoGenerator.prototype.bin = function bin() {
-  this.copy('bin/watchmedo.sh', 'bin/watchmedo.sh');
-};
 
 DjangoGenerator.prototype.requirements = function requirements() {
   this.template('requirements/common', 'requirements/COMMON');
@@ -121,13 +113,10 @@ DjangoGenerator.prototype.settings = function settings() {
 };
 
 DjangoGenerator.prototype.projectfiles = function projectfiles() {
-  this.copy('editorconfig', '.editorconfig');
-  this.copy('jshintrc', '.jshintrc');
-  this.template('_readme.md', 'README.md');
   this.copy('urls.py', 'urls.py');
   this.copy('_wsgi.py', 'wsgi.py');
   this.copy('manage.py', 'manage.py');
   this.copy('init.py', '__init__.py');
-  this.template('_fabfile.py', 'fabfile.py');
   this.template('_package.json', 'package.json');
+  this.template('webpack.config', 'webpack.config');
 };

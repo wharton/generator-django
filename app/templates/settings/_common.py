@@ -51,7 +51,7 @@ USE_L10N = True
 USE_TZ = True
 
 # A string representing the time zone for this installation.
-TIME_ZONE = 'America/Chicago'
+TIME_ZONE = 'America/New York'
 
 # A string representing the language code for this installation.
 LANGUAGE_CODE = 'en'
@@ -150,10 +150,24 @@ EXTERNAL_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.humanize',
 
     # Other external apps
 )
 
 INTERNAL_APPS = (
-    # Application specific apps
+    'rest_framework',
+    'froala_editor',
+    'django_extensions',
+    'bootstrap4',
+    'fontawesome',
+    'base_theme',
+    'webpack_loader',
 )
+
+WEBPACK_LOADER = {
+    'DEFAULT': {
+        'BUNDLE_DIR_NAME': 'bundles/',
+        'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.json'),
+    }
+}

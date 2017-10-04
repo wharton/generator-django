@@ -1,46 +1,36 @@
 {
-  "name": "generator-django",
-  "version": "0.2.3",
-  "description": "A generator for Yeoman",
-  "keywords": [
-    "yeoman-generator",
-    "django",
-    "python",
-    "yeoman"
-  ],
-  "homepage": "https://github.com/diegotoral/generator-django",
-  "bugs": "https://github.com/diegotoral/generator-django/issues",
-  "author": {
-    "name": "Diego Toral",
-    "email": "diegotoral@gmail.com",
-    "url": "https://github.com/diegotoral"
-  },
-  "main": "app/index.js",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/diegotoral/generator-django.git"
-  },
-  "scripts": {
-    "test": "mocha"
-  },
-  "dependencies": {
-    "randomstring": "^1.0.3",
-    "yeoman-generator": "~0.14.0"
-  },
-  "devDependencies": {
-    "mocha": "~1.14.0",
-    "sinon": "^1.11.1"
-  },
-  "peerDependencies": {
-    "yo": ">=1.0.0"
-  },
-  "engines": {
-    "node": ">=0.8.0",
-    "npm": ">=1.2.10"
-  },
-  "licenses": [
-    {
-      "type": "MIT"
-    }
-  ]
+	"name": "generator-wrpdt",
+	"version": "0.2.3",
+	"description": "A generator for Yeoman for Wharton Research Developers",
+	"keywords": [
+		"yeoman-generator",
+		"django",
+		"python",
+		"yeoman",
+		"wharton"
+	],
+	"author": {
+		"name": "Shawn Zamechek",
+		"email": "zamechek@wharton.upenn.edu",
+		"url": "https://github.com/wharton"
+	},
+	"main": "app/index.js",
+	"repository": {
+		"type": "git",
+		"url": "git://github.com:wharton/generator-wrpdt.git"
+	},
+	"dependencies": {
+		"randomstring": "^1.0.3",
+		"yeoman-generator": "^0.14.2"
+	},
+	"peerDependencies": {
+		"yo": ">=1.0.0"
+	},
+	"engines": {
+		"node": ">=0.8.0",
+		"npm": ">=1.2.10"
+	},
+	"licenses": [{
+		"type": "MIT"
+	}]
 }
