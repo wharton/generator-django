@@ -105,7 +105,6 @@ DjangoGenerator.prototype.requirements = function requirements() {
 };
 
 DjangoGenerator.prototype.settings = function settings() {
-  this.copy('settings/gitignore', 'settings/.gitignore');
   this.copy('init.py', 'settings/__init__.py');
   this.template('settings/_common.py', 'settings/common.py');
   this.template('settings/_testing.py', 'settings/testing.py');

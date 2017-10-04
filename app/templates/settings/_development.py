@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
-from <%= _.slugify(siteName) %>.settings.common import *
+from settings.common import *
 
 
 # Secret key
@@ -27,12 +27,12 @@ TEMPLATE_DEBUG = DEBUG
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': SITE_DIR + '/db/development.sqlite'
+        'NAME': PROJECT_DIR + '/db/development.sqlite'
     },
 
     'test': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': SITE_DIR + '/db/testing.sqlite'
+        'NAME': PROJECT_DIR + '/db/testing.sqlite'
     }
 }
 

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import sys
+import os
 
 import django
 from path import path
@@ -51,7 +52,7 @@ USE_L10N = True
 USE_TZ = True
 
 # A string representing the time zone for this installation.
-TIME_ZONE = 'America/New York'
+TIME_ZONE = 'America/New_York'
 
 # A string representing the language code for this installation.
 LANGUAGE_CODE = 'en'
@@ -168,6 +169,6 @@ INTERNAL_APPS = (
 WEBPACK_LOADER = {
     'DEFAULT': {
         'BUNDLE_DIR_NAME': 'bundles/',
-        'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.json'),
+        'STATS_FILE': os.path.join(PROJECT_DIR, 'webpack-stats.json'),
     }
 }
