@@ -3,9 +3,6 @@
 ### NPM ###
 node_modules
 
-### Bower ###
-static/vendor
-
 ### Django ###
 *.log
 *.pot

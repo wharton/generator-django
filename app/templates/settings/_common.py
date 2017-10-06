@@ -1,165 +1,35 @@
 # -*- coding: utf-8 -*-
 
-import sys
-import os
-
-import django
-from path import path
-
-
 ##################################################################
 # Application configuration
 ##################################################################
 
-# The ID of the current site in the django_site database table.
-SITE_ID = 1
+import environ
+import os
+import sys
+import random
 
-# Directories
-PROJECT_DIR = path(__file__).abspath().realpath().dirname().parent
-PROJECT_NAME = PROJECT_DIR.basename()
-SITE_DIR = PROJECT_DIR.parent
-APPS_DIR = PROJECT_DIR / 'apps'
-LIBS_DIR = PROJECT_DIR / 'libs'
+env = environ.Env()
 
-# Append directories to sys.path
-sys.path.append(SITE_DIR)
-sys.path.append(APPS_DIR)
-sys.path.append(LIBS_DIR)
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
-# Root URLs module
-ROOT_URLCONF = '<%= _.slugify(siteName) %>.urls'
+SECRET_KEY = env('DJANGO_SECRET_KEY',
+                 default='<%= secret %>')
 
-# WSGI application
-WSGI_APPLICATION = '<%= _.slugify(siteName) %>.wsgi.application'
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = False
+TEMPLATE_DEBUG = False
 
-# Secret key
-# This is used to provide cryptographic signing, and should be set
-# to a unique, unpredictable value.
-SECRET_KEY = 'yoursecretkey'
+ALLOWED_HOSTS = ['*']
 
-##################################################################
-# Language and timezone settings
-##################################################################
-
-# Specifies whether Django’s translation system should be enabled.
-USE_I18N = True
-
-# Specifies if localized formatting of data will be enabled by
-# default or not.
-USE_L10N = True
-
-# Specifies if datetimes will be timezone-aware by default or not.
-USE_TZ = True
-
-# A string representing the time zone for this installation.
-TIME_ZONE = 'America/New_York'
-
-# A string representing the language code for this installation.
-LANGUAGE_CODE = 'en'
-
-##################################################################
-# Authentication settings
-##################################################################
-
-# The model to use to represent a User.
-AUTH_USER_MODEL = 'auth.User'
-
-# The URL where requests are redirected for login.
-LOGIN_URL = '/accounts/login/'
-
-# The URL where requests are redirected for logout.
-LOGOUT_URL = '/accounts/logout/'
-
-# The URL where requests are redirected after login.
-LOGIN_REDIRECT_URL = '/accounts/profile/'
-
-##################################################################
-# Middleware settings
-##################################################################
-
-# The default number of seconds to cache a page when the caching
-# middleware or cache_page() decorator is used.
-CACHE_MIDDLEWARE_SECONDS = 5
-
-# The cache key prefix that the cache middleware should use.
-CACHE_MIDDLEWARE_KEY_PREFIX = PROJECT_NAME + '_'
-
-# A tuple of middleware classes to use.
-MIDDLEWARE_CLASSES = (
-    'django.middleware.common.CommonMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    # Uncomment the next line for simple clickjacking protection:
-    # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
-)
-
-##################################################################
-# Static settings
-##################################################################
-
-# The absolute path to the directory where collectstatic will
-# collect static files for deployment.
-STATIC_ROOT = ''
-
-# URL to use when referring to static files located in STATIC_ROOT.
-STATIC_URL = '/static/'
-
-# Additional locations the staticfiles app will traverse if the
-# FileSystemFinder finder is enabled.
-STATICFILES_DIRS = (
-    PROJECT_DIR / 'static',
-)
-
-# The list of finder backends that know how to find static files
-# in various locations.
-STATICFILES_FINDERS = (
-    'django.contrib.staticfiles.finders.FileSystemFinder',
-    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-)
-
-##################################################################
-# Templates settings
-##################################################################
-
-# List of locations of the template source files.
-TEMPLATES = [
-    {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(PROJECT_DIR, 'templates')],
-    }
-]
-
-# A tuple of template loader classes, specified as strings.
-TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
-)
-
-# A tuple of callables that are used to populate the context in
-# RequestContext.
-TEMPLATE_CONTEXT_PROCESSORS = (
-    'django.core.context_processors.request',
-    'django.contrib.auth.context_processors.auth'
-)
-
-##################################################################
-# Installed apps
-##################################################################
-
-EXTERNAL_APPS = (
+INSTALLED_APPS = [
+    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
-
-    # Other external apps
-)
-
-INTERNAL_APPS = (
     'rest_framework',
     'froala_editor',
     'django_extensions',
@@ -167,11 +37,101 @@ INTERNAL_APPS = (
     'fontawesome',
     'base_theme',
     'webpack_loader',
+
+]
+
+MIDDLEWARE_CLASSES = (
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
+
+AUTHENTICATION_BACKENDS = (
+
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [os.path.join(BASE_DIR, 'templates'), ],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                "django.contrib.auth.context_processors.auth",
+                "django.template.context_processors.debug",
+                "django.template.context_processors.i18n",
+                "django.template.context_processors.media",
+                "django.template.context_processors.static",
+                "django.template.context_processors.tz",
+                "django.template.context_processors.request",
+                "django.contrib.messages.context_processors.messages",
+            ]
+        }
+    }
+]
+
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        # 'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+        'rest_framework.permissions.AllowAny'
+    ]
+}
+ROOT_URLCONF = 'urls'
+
+# Python dotted path to the WSGI application used by Django's runserver.
+WSGI_APPLICATION = 'wsgi.application'
+
+X_FRAME_OPTIONS = 'ALLOWALL'
+# Internationalization
+# https://docs.djangoproject.com/en/1.7/topics/i18n/
+
+LANGUAGE_CODE = 'en-us'
+
+TIME_ZONE = 'America/New_York'
+
+USE_I18N = True
+
+USE_L10N = True
+
+USE_TZ = True
+
+
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+)
+
+
+STATIC_URL = '/static/'
+
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
+
+####
+# WEBPACK
+####
 
 WEBPACK_LOADER = {
     'DEFAULT': {
         'BUNDLE_DIR_NAME': 'bundles/',
-        'STATS_FILE': os.path.join(PROJECT_DIR, 'webpack-stats.json'),
+        'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.json'),
     }
 }
+
+FROALA_EDITOR_OPTIONS = {
+    'key': 'zdA-8tdcwwC2iynH-8I-7rbjF4twii1zhgfeciA4C-7cu==',
+}
+
+FROALA_INCLUDE_JQUERY = False
+
+import sys
+import os
+
+import django
+from path import path

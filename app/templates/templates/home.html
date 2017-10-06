@@ -1,1 +1,27 @@
-foo
+{% extends "base.html" %} {% block content %}
+<div class="alert alert-success" role="alert">
+	<p>Congrats! Your
+		<%= _.slugify(siteName) %> is working</p>
+	<p>Wharton basetheme has been installed. For more info on how to use basetheme, see the following:</p>
+	<p><a href='https://github.com/wharton/django-base-theme'>Wharton Basetheme github page</a></p>
+</div>
+<blockquote>
+	<h3>Next steps<h3>
+     <ul>
+         <li>Delete this welcome page:</li>
+         <ul>
+             <li>Remove the base URL in /[your_project]/[your_project]/urls.py file</li>
+             <li>Delete the /[your_project]/templates directory</li>
+         </ul>
+         </br>
+         <li>Configure your database:</li>
+         <ul>
+             <li>Add your settings to the /etc/app_envvars/[your_project].variables file (see <a href=https://confluence.wharton.upenn.edu/pages/viewpage.action?pageId=39028661/>envvars</a>)</li>
+             <li>If using SQLServer, uncomment the following line in settings/dev: 'default': env.db('DATABASE_SQLSERVER_URL', engine='sql_server.pyodbc')</li>
+             <li>In settings/dev change the sqlite db reference from 'default' to 'sqlite'</li>
+             <li>Run your migrations against your new SQLServer database</li>
+         </ul>
+     </ul>
+ </blockquote>
+
+{% endblock %}

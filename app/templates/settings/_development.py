@@ -1,87 +1,78 @@
 # -*- coding: utf-8 -*-
+from .common import *
+import sys
+import os
 
-import logging
-from settings.common import *
-
-
-# Secret key
-# This is used to provide cryptographic signing, and should be set
-# to a unique, unpredictable value.
-SECRET_KEY = '<%= secret %>'
+from django.http import HttpResponse
+from io import StringIO
+import json
 
 
-##################################################################
-# Debug settings
-##################################################################
-
-# Set debug
+# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-# Turns on/off template debug mode.
-TEMPLATE_DEBUG = DEBUG
+TEMPLATES[0]['OPTIONS']['debug'] = True
 
-##################################################################
-# Databases settings
-##################################################################
+
+class NonHtmlDebugToolbarMiddleware(object):
+    """
+    From Benoss on GitHubGist: https://gist.github.com/Benoss/9592229
+
+    The Django Debug Toolbar usually only works for views that return HTML.
+    This middleware wraps any non-HTML response in HTML if the request
+    has a 'debug' query parameter (e.g. http://localhost/foo?debug).
+    Special handling for json (pretty printing) and binary data (only show data length).
+    """
+
+    @staticmethod
+    def process_response(request, response):
+        debug = request.GET.get('debug', 'UNSET')
+
+        if debug != 'UNSET':
+            if response['Content-Type'] == 'application/octet-stream':
+                new_content = '<html><body>Binary Data, ' \
+                    'Length: {}</body></html>'.format(len(response.content))
+                response = HttpResponse(new_content)
+            elif response['Content-Type'] != 'text/html':
+                content = response.content.decode('utf-8')
+                try:
+                    json_ = json.loads(content)
+                    content = json.dumps(json_, sort_keys=True, indent=2)
+                except ValueError:
+                    pass
+                response = HttpResponse('<html><body><pre>{}'
+                                        '</pre></body></html>'.format(content))
+        return response
+
+
+def custom_show_toolbar(self):
+    return True
+if not 'test' in sys.argv:
+
+    DEBUG_TOOLBAR_PATCH_SETTINGS = True
+
+    INTERNAL_IPS = ('127.0.0.1', '128.91.*.*',)
+
+    INSTALLED_APPS += (
+        'debug_toolbar',
+    )
+
+    MIDDLEWARE_CLASSES = (
+        'debug_toolbar.middleware.DebugToolbarMiddleware',
+        'settings.development.NonHtmlDebugToolbarMiddleware',
+    ) + MIDDLEWARE_CLASSES
+
+DEBUG_TOOLBAR_CONFIG = {
+    'SHOW_TOOLBAR_CALLBACK': 'settings.development.custom_show_toolbar'
+}
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': PROJECT_DIR + '/db/development.sqlite'
-    },
-
-    'test': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': PROJECT_DIR + '/db/testing.sqlite'
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': '<%= _.slugify(databaseName) %>',
+        'USER': 'django_user',
+        'PASSWORD': '1qaz2wsx',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
-
-##################################################################
-# Logging settings
-##################################################################
-
-LOG_DATE_FORMAT = '%d %b %Y %H:%M:%S'
-
-LOG_FORMATTER = logging.Formatter(
-    u'%(asctime)s | %(levelname)-7s | %(name)s | %(message)s',
-    datefmt=LOG_DATE_FORMAT)
-
-CONSOLE_HANDLER = logging.StreamHandler()
-
-CONSOLE_HANDLER.setFormatter(LOG_FORMATTER)
-
-CONSOLE_HANDLER.setLevel(logging.DEBUG)
-
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'filters': {
-        'require_debug_false': {
-            '()': 'django.utils.log.RequireDebugFalse'
-        }
-    },
-    'handlers': {
-        'mail_admins': {
-            'level': 'ERROR',
-            'filters': ['require_debug_false'],
-            'class': 'django.utils.log.AdminEmailHandler'
-        }
-    },
-    'loggers': {
-        'django.request': {
-            'handlers': ['mail_admins'],
-            'level': 'ERROR',
-            'propagate': True,
-        },
-    }
-}
-
-##################################################################
-# Installed apps
-##################################################################
-
-DEVELOPMENT_APPS = (
-    'debug_toolbar',
-)
-
-INSTALLED_APPS = EXTERNAL_APPS + DEVELOPMENT_APPS + INTERNAL_APPS

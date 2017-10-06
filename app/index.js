@@ -8,114 +8,131 @@ var foldername = path.basename(process.cwd());
 
 
 var DjangoGenerator = module.exports = function DjangoGenerator(args, options, config) {
-  yeoman.generators.Base.apply(this, arguments);
+	yeoman.generators.Base.apply(this, arguments);
 
-  this.on('end', function () {
-    this.installDependencies({ skipInstall: options['skip-install'] });
-  });
+	this.on('end', function() {
+		this.installDependencies({
+			bower: false,
+			skipInstall: options['skip-install']
+		});
+	});
 
-  this.pkg = JSON.parse(this.readFileAsString(path.join(__dirname, '../package.json')));
+	this.on('end', function() {
+		this.spawnCommand('chmod', ['+x', 'go.sh'])
+		this.spawnCommand('./go.sh', []);
+	});
+
+	this.pkg = JSON.parse(this.readFileAsString(path.join(__dirname, '../package.json')));
 };
 
 util.inherits(DjangoGenerator, yeoman.generators.Base);
 
 DjangoGenerator.prototype.askFor = function askFor() {
-  var cb = this.async();
+	var cb = this.async();
 
-  // have Yeoman greet the user.
-  console.log(this.yeoman);
+	// have Yeoman greet the user.
+	console.log(this.yeoman);
 
-  var prompts = [{
-    name: 'siteName',
-    message: 'Whats the name of the website?',
-    default: foldername
-  }, {
-    name: 'author',
-    message: 'Who is the creator?',
-    default: 'dummy'
-  }, {
-    name: 'projectRepo',
-    message: 'Whats the repo clone URL?'
-  },{
-    name: 'djangoVersion',
-    message: 'Which version of Django would you like to use?',
-    type: 'list',
-    choices: ['1.9', '1.10', '1.11'],
-    default: 2
-  }];
+	var prompts = [{
+			name: 'siteName',
+			message: 'Whats the name of the website?',
+			default: foldername
+		}, {
+			name: 'databaseName',
+			message: 'What do you want to name the database?',
+			default: foldername
+		},
+		{
+			name: 'author',
+			message: 'Who is the creator?',
+			default: 'dummy'
+		}, {
+			name: 'projectRepo',
+			message: 'Whats the repo clone URL?'
+		}, {
+			name: 'djangoVersion',
+			message: 'Which version of Django would you like to use?',
+			type: 'list',
+			choices: ['1.9', '1.10', '1.11'],
+			default: 2
+		}
+	];
 
-  this.prompt(prompts, function (props) {
-    this.siteName = props.siteName;
-    this.author = props.author;
-    this.projectRepo = props.projectRepo;
-    var versionMap = {
-        '1.9': '>=1.9,<1.10',
-        '1.10': '>=1.10,<1.11',
-        '1.11': '>=1.11,<1.12',
-    };
-    this.djangoVersion = versionMap[props.djangoVersion];
+	this.prompt(prompts, function(props) {
+		this.siteName = props.siteName;
+		this.databaseName = props.databaseName;
+		this.author = props.author;
+		this.projectRepo = props.projectRepo;
+		var versionMap = {
+			'1.9': '>=1.9,<1.10',
+			'1.10': '>=1.10,<1.11',
+			'1.11': '>=1.11,<1.12',
+		};
+		this.djangoVersion = versionMap[props.djangoVersion];
 
-    cb();
-  }.bind(this));
+		cb();
+	}.bind(this));
 };
 
 DjangoGenerator.prototype.createSecret = function createSecret() {
-    this.secret = randomString.generate(48);
+	this.secret = randomString.generate(48);
 };
 
 DjangoGenerator.prototype.app = function app() {
-  // Apps folder.
-  this.mkdir('apps');
+	// Apps folder.
+	this.mkdir('apps');
 
-  // Settings folder.
-  this.mkdir('settings');
+	// Settings folder.
+	this.mkdir('settings');
 
-  // Requirements folder.
-  this.mkdir('requirements');
+	// Requirements folder.
+	this.mkdir('requirements');
 
-  // Libs and bins folder.
-  this.mkdir('bin');
-  this.mkdir('libs');
+	// Libs and bins folder.
+	this.mkdir('libs');
 
-  // Dev db folder
-  this.mkdir('db');
+	// Dev db folder
+	this.mkdir('db');
 
-  // Templates folder.
-  this.mkdir('templates');
-  this.mkdir('templates/layout');
+	// Templates folder.
+	this.mkdir('templates');
+	this.mkdir('templates/layout');
 
-  // Static files folder.
-  this.mkdir('static');
-  this.mkdir('static/js');
-  this.mkdir('static/css');
-  this.mkdir('static/img');
-  this.mkdir('static/vendor');
+	// Static files folder.
+	this.mkdir('static');
+	this.mkdir('static/js');
+	this.mkdir('static/css');
+	this.mkdir('static/img');
+	this.mkdir('static/vendor');
 };
 
 DjangoGenerator.prototype.git = function git() {
-  this.template('_gitignore', '.gitignore');
+	this.template('_gitignore', '.gitignore');
 };
 
+DjangoGenerator.prototype.scripts = function scripts() {
+	this.template('go.sh', 'go.sh');
+};
 
 DjangoGenerator.prototype.requirements = function requirements() {
-  this.template('requirements/common', 'requirements/COMMON');
-  this.copy('requirements/testing', 'requirements/TESTING');
-  this.copy('requirements/development', 'requirements/DEVELOPMENT');
-  this.copy('requirements/production', 'requirements/PRODUCTION');
+	this.template('requirements/common', 'requirements/COMMON');
+	this.copy('requirements/development', 'requirements/DEVELOPMENT');
+	this.copy('requirements/production', 'requirements/PRODUCTION');
 };
 
 DjangoGenerator.prototype.settings = function settings() {
-  this.copy('init.py', 'settings/__init__.py');
-  this.template('settings/_common.py', 'settings/common.py');
-  this.template('settings/_testing.py', 'settings/testing.py');
-  this.template('settings/_development.py', 'settings/development.py');
+	this.copy('init.py', 'settings/__init__.py');
+	this.template('settings/_common.py', 'settings/common.py');
+	this.template('settings/_development.py', 'settings/development.py');
+	this.template('settings/_production.py', 'settings/production.py');
 };
 
 DjangoGenerator.prototype.projectfiles = function projectfiles() {
-  this.copy('urls.py', 'urls.py');
-  this.copy('_wsgi.py', 'wsgi.py');
-  this.copy('manage.py', 'manage.py');
-  this.copy('init.py', '__init__.py');
-  this.template('_package.json', 'package.json');
-  this.template('webpack.config', 'webpack.config');
+	this.template('templates/home.html', 'templates/home.html');
+	this.copy('urls.py', 'urls.py');
+	this.copy('_wsgi.py', 'wsgi.py');
+	this.copy('manage.py', 'manage.py');
+	this.copy('init.py', '__init__.py');
+	this.template('_package.json', 'package.json');
+	this.template('webpack.config', 'webpack.config');
 };
