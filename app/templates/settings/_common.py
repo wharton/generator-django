@@ -124,9 +124,12 @@ STATICFILES_FINDERS = (
 ##################################################################
 
 # List of locations of the template source files.
-TEMPLATE_DIRS = (
-    PROJECT_DIR / 'templates',
-)
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [os.path.join(PROJECT_DIR, 'templates')],
+    }
+]
 
 # A tuple of template loader classes, specified as strings.
 TEMPLATE_LOADERS = (
